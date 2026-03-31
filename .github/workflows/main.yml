@@ -19,11 +19,13 @@ jobs:
 
       # 2️⃣ Build step (example for Node.js project)
       - name: Install Dependencies
+        working-directory: ./repo
         run: |
           npm install
 
       # 3️⃣ Test step
       - name: Run Tests
+        working-directory: ./repo
         run: |
           npm test
 
@@ -36,5 +38,6 @@ jobs:
 
       # 5️⃣ Deploy to S3 (only runs if build & tests pass)
       - name: Deploy to S3
+        working-directory: ./repo
         run: |
           aws s3 sync . s3://${{ secrets.S3_BUCKET_NAME }} --delete
