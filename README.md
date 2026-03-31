@@ -119,6 +119,36 @@ flowchart TD
 
 ---
 
+
+## Branch-Based Deployment Flow
+
+```mermaid
+flowchart TD
+    A[Feature / Dev Changes] --> B[Dev Branch Pipeline]
+    B --> C[Automated Tests in Dev Environment]
+    C -->|Pass| D[Merge Dev → Preprod]
+    D --> E[Preprod Branch Pipeline]
+    E --> F[Integration / QA Tests in Preprod]
+    F -->|Pass| G[Merge Preprod → Prod]
+    G --> H[Prod Branch Pipeline]
+    H --> I[Production Deployment]
+
 This diagram clearly shows **the security flow** — GitHub issues a token, AWS verifies it, and no static secrets are needed.  
 
 ---
+
+
+### **Explanation**
+
+1. **Feature / Dev Changes** → developers push to **feature branch** or directly to **Dev branch**.  
+2. **Dev Branch Pipeline** → deploys to development environment and runs unit tests.  
+3. **Merge Dev → Preprod** → if dev tests pass, changes are merged into **preprod branch**.  
+4. **Preprod Branch Pipeline** → deploys to staging environment, runs integration/QA tests.  
+5. **Merge Preprod → Prod** → once verified, changes are merged into **main/production branch**.  
+6. **Prod Branch Pipeline** → deploys to production.  
+
+---
+
+I can also **update your Level 1 README** and embed **both your S3 pipeline diagram and this branch-based deployment diagram** in one file, so it’s all visually clear for anyone reviewing the repo.  
+
+Do you want me to do that?
