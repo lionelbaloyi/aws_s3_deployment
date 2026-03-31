@@ -1,25 +1,40 @@
-name: Deploy to S3
+name: Dev Pipeline - Build, Test & Deploy to S3
 
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
-  deploy:
+  build-test-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # required for OIDC
+      contents: read    # required for checkout
 
     steps:
+      # 1️⃣ Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Configure AWS
+      # 2️⃣ Build step (example for Node.js project)
+      - name: Install Dependencies
+        run: |
+          npm install
+
+      # 3️⃣ Test step
+      - name: Run Tests
+        run: |
+          npm test
+
+      # 4️⃣ Configure AWS credentials via OIDC
+      - name: Configure AWS via OIDC
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      # 5️⃣ Deploy to S3 (only runs if build & tests pass)
       - name: Deploy to S3
         run: |
           aws s3 sync . s3://${{ secrets.S3_BUCKET_NAME }} --delete
